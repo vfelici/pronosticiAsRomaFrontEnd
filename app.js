@@ -1,6 +1,6 @@
 let token = "";
 let isAdmin = false;
-const backendUrl = "https://TUO_BACKEND.onrender.com";
+const backendUrl = "https://backendpronosticiasroma.onrender.com";
 
 async function register() {
     const res = await fetch(`${backendUrl}/register`, {
