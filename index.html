@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pronostici AS Roma</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Pronostici AS Roma</h1>
+
+<div id="login">
+    <input id="username" placeholder="Username">
+    <input id="password" placeholder="Password" type="password">
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+</div>
+
+<div id="main" style="display:none;">
+    <h2>Inserisci pronostico</h2>
+    <input id="match_id" placeholder="ID partita">
+    <input id="home_score" placeholder="Gol Roma">
+    <input id="away_score" placeholder="Gol avversari">
+    <input id="scorer" placeholder="Marcatore">
+    <button onclick="addPrediction()">Invia</button>
+
+    <h2>Visualizza pronostici</h2>
+    <input id="view_match_id" placeholder="ID partita">
+    <button onclick="viewPredictions()">Mostra pronostici</button>
+    <div id="predictions_list"></div>
+
+    <h2>Classifica</h2>
+    <div id="leaderboard"></div>
+</div>
+
+<div id="admin" style="display:none;">
+    <h2>Pannello Admin</h2>
+    <input id="result_match_id" placeholder="ID partita">
+    <input id="result_home" placeholder="Gol Roma">
+    <input id="result_away" placeholder="Gol avversari">
+    <button onclick="setResult()">Salva risultato</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
