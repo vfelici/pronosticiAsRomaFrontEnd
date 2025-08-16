@@ -1,7 +1,7 @@
 let token = "";
 let isAdmin = false;
 
-// 👇 Cambia con l’URL del backend su Render
+// 👇 Cambia con l’URL del backend su Render 
 const backendUrl = "https://backendpronosticiasroma.onrender.com";
 
 // --- REGISTRAZIONE + LOGIN AUTOMATICO ---
