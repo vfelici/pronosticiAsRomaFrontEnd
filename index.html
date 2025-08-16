@@ -32,7 +32,7 @@
     <div id="leaderboard"></div>
 </div>
 
-<!-- 🔹 Links admin: saranno mostrati solo se l'utente loggato è admin -->
+<!-- 🔹 Links admin: saranno visibili solo se l'utente è admin -->
 <div id="adminLinks" style="display:none; margin-top:30px; text-align:center;">
     <h3>Pannelli Admin</h3>
     <p><a href="add-match.html" target="_blank">➕ Inserisci Partita</a></p>
@@ -48,36 +48,56 @@ async function login() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  const res = await fetch("https://backendpronosticiasroma.onrender.com/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password })
-  });
+  try {
+    const res = await fetch("https://backendpronosticiasroma.onrender.com/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
 
-  const data = await res.json();
-  if (res.ok && data.token) {
-    token = data.token;
-    localStorage.setItem("token", token);
+    const data = await res.json();
 
-    // 🔎 decode del payload JWT per capire se admin
-    const decoded = JSON.parse(atob(token.split(".")[1]));
-    isAdmin = decoded.is_admin || false;
+    if (res.ok && data.token) {
+      token = data.token;
+      localStorage.setItem("token", token);
 
-    document.getElementById("login").style.display = "none";
-    document.getElementById("main").style.display = "block";
+      // Decodifica JWT
+      let decoded = {};
+      try {
+        decoded = JSON.parse(atob(token.split(".")[1]));
+      } catch (e) {
+        console.error("Errore decodifica JWT:", e);
+      }
 
-    if(isAdmin){
-      document.getElementById("adminLinks").style.display = "block";
+      console.log("Payload JWT:", decoded);
+      isAdmin = decoded.is_admin || false;
+
+      // Mostra pannelli user
+      document.getElementById("login").style.display = "none";
+      document.getElementById("main").style.display = "block";
+
+      // Mostra link admin solo se admin E se l'elemento esiste
+      const adminLinks = document.getElementById("adminLinks");
+      if (isAdmin && adminLinks) {
+        adminLinks.style.display = "block";
+      }
+
+      // Carica classifica (funzione nel tuo app.js)
+      if (typeof loadLeaderboard === "function") {
+        loadLeaderboard();
+      }
+    } else {
+      alert(data.error || "Errore login");
     }
-    // carica eventuali leaderboard ecc...
-    loadLeaderboard();
-  } else {
-    alert(data.error || "Errore login");
+  } catch (err) {
+    console.error("Errore di connessione al server:", err);
+    alert("Errore di connessione al server. Controlla la console.");
   }
 }
 
+// esempio di funzione register (se non già in app.js)
 function register() {
-  // registrazione utente (già ce l'hai in app.js)
+  alert("Funzione register ancora da implementare 😅");
 }
 </script>
 </body>
