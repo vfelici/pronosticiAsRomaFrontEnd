@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Inserisci Partita</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    h1 { text-align: center; }
+    label { display:block; margin: 10px 0 5px; }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #a00;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #800;
+    }
+  </style>
+</head>
+<body>
+  <h1>Inserisci Partita</h1>
+
+  <div id="loginPanel">
+    <h2>Login Admin</h2>
+    <input id="username" placeholder="Username" />
+    <input id="password" placeholder="Password" type="password" />
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="mainPanel" style="display:none;">
+    <label for="home">Squadra di casa</label>
+    <input id="home" placeholder="AS Roma" />
+
+    <label for="away">Squadra ospite</label>
+    <input id="away" placeholder="Juventus" />
+
+    <label for="date">Data e ora</label>
+    <input id="date" type="datetime-local" />
+
+    <button onclick="addMatch()">Crea partita</button>
+
+    <div id="status"></div>
+  </div>
+
+<script>
+let token = "";
+const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO URL Render
+
+async function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const res = await fetch(`${backendUrl}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+  if (res.ok && data.token) {
+    token = data.token;
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    if (decoded.is_admin) {
+      document.getElementById("loginPanel").style.display = "none";
+      document.getElementById("mainPanel").style.display = "block";
+    } else {
+      alert("Non sei admin!");
+    }
+  } else {
+    alert(data.error || "Errore login");
+  }
+}
+
+async function addMatch() {
+  const home = document.getElementById("home").value.trim();
+  const away = document.getElementById("away").value.trim();
+  const date = document.getElementById("date").value;
+
+  if(!home || !away || !date){
+    document.getElementById("status").innerText = "Compila tutti i campi!";
+    return;
+  }
+
+  const res = await fetch(`${backendUrl}/matches`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ home_team: home, away_team: away, date })
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    document.getElementById("status").innerText = "✅ Partita creata: " + data.match.home_team + " vs " + data.match.away_team;
+  } else {
+    document.getElementById("status").innerText = "❌ Errore: " + (data.error || "Impossibile creare la partita");
+  }
+}
+</script>
+</body>
+</html>
