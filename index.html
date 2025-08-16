@@ -32,13 +32,53 @@
     <div id="leaderboard"></div>
 </div>
 
-<!-- 🔹 Link veloci per admin (pagine dedicate separate) -->
-<div id="adminLinks" style="margin-top:30px; text-align:center;">
-    <h3>Accesso pannelli Admin</h3>
+<!-- 🔹 Links admin: saranno mostrati solo se l'utente loggato è admin -->
+<div id="adminLinks" style="display:none; margin-top:30px; text-align:center;">
+    <h3>Pannelli Admin</h3>
     <p><a href="admin_inserisci.html" target="_blank">➕ Inserisci Partita</a></p>
     <p><a href="admin_risultati.html" target="_blank">✏️ Aggiorna Risultati</a></p>
 </div>
 
 <script src="app.js"></script>
+<script>
+let token = "";
+let isAdmin = false;
+
+async function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const res = await fetch("https://backendpronosticiasroma.onrender.com/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+  if (res.ok && data.token) {
+    token = data.token;
+    localStorage.setItem("token", token);
+
+    // 🔎 decode del payload JWT per capire se admin
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    isAdmin = decoded.is_admin || false;
+
+    document.getElementById("login").style.display = "none";
+    document.getElementById("main").style.display = "block";
+
+    if(isAdmin){
+      document.getElementById("adminLinks").style.display = "block";
+    }
+    // carica eventuali leaderboard ecc...
+    loadLeaderboard();
+  } else {
+    alert(data.error || "Errore login");
+  }
+}
+
+function register() {
+  // registrazione utente (già ce l'hai in app.js)
+}
+</script>
 </body>
 </html>
