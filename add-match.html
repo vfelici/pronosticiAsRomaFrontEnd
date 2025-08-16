@@ -29,6 +29,7 @@
     button:hover {
       background: #800;
     }
+    #status { margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -58,7 +59,7 @@
 
 <script>
 let token = "";
-const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO URL Render
+const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO URL backend
 
 async function login() {
   const username = document.getElementById("username").value.trim();
@@ -91,11 +92,11 @@ async function addMatch() {
   const date = document.getElementById("date").value;
 
   if(!home || !away || !date){
-    document.getElementById("status").innerText = "Compila tutti i campi!";
+    document.getElementById("status").innerText = "⚠️ Compila tutti i campi!";
     return;
   }
 
-  const res = await fetch(`${backendUrl}/matches`, {
+  const res = await fetch(`${backendUrl}/admin/matches`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -106,9 +107,11 @@ async function addMatch() {
 
   const data = await res.json();
   if (res.ok) {
-    document.getElementById("status").innerText = "✅ Partita creata: " + data.match.home_team + " vs " + data.match.away_team;
+    document.getElementById("status").innerText = 
+      `✅ Partita creata: ${data.home_team} vs ${data.away_team} (${new Date(data.date).toLocaleString()})`;
   } else {
-    document.getElementById("status").innerText = "❌ Errore: " + (data.error || "Impossibile creare la partita");
+    document.getElementById("status").innerText = 
+      "❌ Errore: " + (data.error || "Impossibile creare la partita");
   }
 }
 </script>
