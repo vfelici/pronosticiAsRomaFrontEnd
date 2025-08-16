@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Aggiorna Risultati</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    h1 { text-align: center; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td { border: 1px solid #999; }
+    th, td {
+      padding: 8px;
+      text-align: center;
+    }
+    th { background-color: #eee; }
+    input,button {
+      padding: 5px;
+      margin: 2px;
+    }
+    button {
+      background: #a00;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #800;
+    }
+  </style>
+</head>
+<body>
+  <h1>Aggiorna Risultati Partite</h1>
+
+  <div id="loginPanel">
+    <h2>Login Admin</h2>
+    <input id="username" placeholder="Username" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="mainPanel" style="display:none;">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Data</th>
+          <th>Casa</th>
+          <th>Trasferta</th>
+          <th>Risultato attuale</th>
+          <th>Terminata</th>
+          <th>Aggiorna</th>
+        </tr>
+      </thead>
+      <tbody id="matchesTable"></tbody>
+    </table>
+  </div>
+
+<script>
+let token = "";
+const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO backend URL
+
+async function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  const res = await fetch(`${backendUrl}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+  if (res.ok && data.token) {
+    token = data.token;
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    if (decoded.is_admin) {
+      document.getElementById("loginPanel").style.display = "none";
+      document.getElementById("mainPanel").style.display = "block";
+      loadMatches();
+    } else {
+      alert("Non sei admin!");
+    }
+  } else {
+    alert(data.error || "Errore login");
+  }
+}
+
+async function loadMatches() {
+  const res = await fetch(`${backendUrl}/matches`, {
+    headers: { "Authorization": "Bearer " + token }
+  });
+
+  const data = await res.json();
+  if(res.ok){
+    const table = document.getElementById("matchesTable");
+    table.innerHTML = "";
+    data.forEach(m => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${m.id}</td>
+        <td>${new Date(m.date).toLocaleString()}</td>
+        <td>${m.home_team}</td>
+        <td>${m.away_team}</td>
+        <td>${m.home_score !== null && m.away_score !== null 
+              ? m.home_score + " - " + m.away_score 
+              : "-"}</td>
+        <td>${m.finished ? "✅" : "⏳"}</td>
+        <td>
+          <input type="number" id="hs_${m.id}" placeholder="Casa" style="width:50px">
+          <input type="number" id="as_${m.id}" placeholder="Trasferta" style="width:50px">
+          <button onclick="updateResult(${m.id})">Aggiorna</button>
+        </td>
+      `;
+      table.appendChild(row);
+    });
+  } else {
+    alert("Errore nel caricamento delle partite");
+  }
+}
+
+async function updateResult(matchId) {
+  const body = {
+    home_score: parseInt(document.getElementById("hs_" + matchId).value),
+    away_score: parseInt(document.getElementById("as_" + matchId).value),
+  };
+
+  if(isNaN(body.home_score) || isNaN(body.away_score)){
+    alert("⚠️ Inserisci entrambi i punteggi!");
+    return;
+  }
+
+  const res = await fetch(`${backendUrl}/admin/matches/${matchId}/result`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify(body)
+  });
+
+  const data = await res.json();
+  if(res.ok){
+    alert(`✅ Risultato aggiornato: ${data.home_team} ${data.home_score} - ${data.away_score} ${data.away_team}`);
+    loadMatches();
+  } else {
+    alert("❌ Errore: " + (data.error || "Impossibile aggiornare il risultato"));
+  }
+}
+</script>
+</body>
+</html>
