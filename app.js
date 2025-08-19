@@ -60,7 +60,7 @@ async function login(forcedUsername, forcedPassword) {
             document.getElementById("login").style.display = "none";
             document.getElementById("main").style.display = "block";
 
-            if (isAdmin) document.getElementById("admin").style.display = "block";
+            if (isAdmin) document.getElementById("adminLinks").style.display = "block";
 
             loadLeaderboard();
             alert("Login eseguito come " + username);
