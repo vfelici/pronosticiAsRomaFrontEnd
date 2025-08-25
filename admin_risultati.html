@@ -85,8 +85,8 @@ async function loadMatches() {
 
   const data = await res.json();
   if(res.ok){
-    const table = document.getElementById("matchesTable");
-    table.innerHTML = "";
+    const tbody = document.querySelector("#matchesTable tbody");
+    tbody.innerHTML = "";
     data.forEach(m => {
       const row = document.createElement("tr");
 
@@ -112,7 +112,7 @@ async function loadMatches() {
           <button onclick="saveScorers(${m.id})">Salva Marcatori</button>
         </td>
       `;
-      table.appendChild(row);
+      tbody.appendChild(row);
     });
   } else {
     alert("Errore nel caricamento delle partite");
