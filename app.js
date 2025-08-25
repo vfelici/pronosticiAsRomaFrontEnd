@@ -64,6 +64,7 @@ async function login(forcedUsername, forcedPassword) {
 
             loadLeaderboard();
             loadUpcomingMatches();
+            loadAllMatchesForView();
         } else {
             alert(data.error || "Errore login");
         }
@@ -176,25 +177,58 @@ async function loadLeaderboard() {
     }
 }
 
-// --- VISUALIZZA PRONOSTICI ---
 async function viewPredictions() {
-    try {
-        const res = await fetch(`${backendUrl}/matches/${document.getElementById("view_match_id").value}/predictions`, {
-            headers: { "Authorization": "Bearer " + token }
-        });
-        const data = await res.json();
+  const match_id = document.getElementById("view_match_select").value;
+  if (!match_id) {
+    alert("⚠️ Seleziona una partita");
+    return;
+  }
 
-        if (res.ok) {
-            let html = "<ul>";
-            data.forEach(p => {
-                html += `<li>${p.username ? p.username + ": " : ""} ${p.home_score}-${p.away_score} (${p.scorer || ""}) ${p.points !== undefined ? "- " + p.points + " punti" : ""}</li>`;
-            });
-            html += "</ul>";
-            document.getElementById("predictions_list").innerHTML = html;
-        } else {
-            alert(data.error || "Errore caricamento pronostici");
-        }
-    } catch (err) {
-        alert("Errore connessione: " + err.message);
+  try {
+    const res = await fetch(`${backendUrl}/predictions/${match_id}`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const data = await res.json();
+
+    const container = document.getElementById("predictions_list");
+    container.innerHTML = `<h3>${data.match.home_team} vs ${data.match.away_team}</h3>`;
+
+    if (data.predictions.length === 0) {
+      container.innerHTML += `<p>Nessun pronostico disponibile</p>`;
+      return;
     }
+
+    let listHtml = "<ul>";
+    data.predictions.forEach(p => {
+      listHtml += `<li><strong>${p.username}</strong>: ${p.home_score}-${p.away_score} (marcatore: ${p.scorer})</li>`;
+    });
+    listHtml += "</ul>";
+    container.innerHTML += listHtml;
+
+  } catch (err) {
+    console.error("Errore caricamento pronostici:", err);
+    alert("Errore recupero pronostici");
+  }
+}
+
+async function loadAllMatchesForView() {
+  try {
+    const res = await fetch(`${backendUrl}/matches`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const matches = await res.json();
+
+    const select = document.getElementById("view_match_select");
+    select.innerHTML = `<option value="">-- seleziona partita --</option>`;
+
+    matches.forEach(m => {
+      const option = document.createElement("option");
+      option.value = m.id;
+      const stato = m.finished ? "✅ finita" : "⏳ in programma";
+      option.textContent = `${new Date(m.date).toLocaleString()} - ${m.home_team} vs ${m.away_team} (${stato})`;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Errore caricamento partite per visualizzazione:", err);
+  }
 }
