@@ -59,7 +59,20 @@
 
 <script>
 let token = "";
-const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO URL backend
+const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO backend URL
+
+token = localStorage.getItem("token"); // recupero token salvato
+if (!token) {
+  alert("⚠️ Devi prima fare login da index.html");
+  window.location.href = "index.html";
+}
+const decoded = JSON.parse(atob(token.split(".")[1]));
+if (decoded.is_admin) {
+  document.getElementById("loginPanel").style.display = "none";
+  document.getElementById("mainPanel").style.display = "block";
+} else {
+  alert("Non sei admin!");
+}
 
 async function login() {
   const username = document.getElementById("username").value.trim();
