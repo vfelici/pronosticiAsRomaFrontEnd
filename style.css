@@ -32,13 +32,28 @@ td, th {
 }
 
 button {
-  background: #a00;
-  color: white;
+  background-color: #8E1B21;   /* Rosso Roma */
+  color: #F7D417;              /* Giallo oro */
+  border: none;
+  border-radius: 5px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
 }
+
 button:hover {
-  background: #800;
+  background-color: #701419;   /* ancora più scuro al hover */
+  transform: scale(1.05);      /* piccolo effetto "zoom" */
 }
+
+button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
 .page-title {
   display: flex;
   align-items: center;
@@ -53,6 +68,22 @@ button:hover {
   height: 50px;           /* dimensione stemma */
   width: auto;
 }
+
+#adminLinks a {
+  color: #8E1B21;
+  font-weight: bold;
+  text-decoration: none;
+  border: 2px solid #8E1B21;
+  padding: 6px 10px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+#adminLinks a:hover {
+  background-color: #8E1B21;
+  color: #F7D417;
+}
+
 /* 🔹 Adatta meglio su schermi stretti */
 @media (max-width: 600px) {
   body {
