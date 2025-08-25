@@ -17,7 +17,12 @@
 
 <div id="main" style="display:none;">
     <h2>Inserisci pronostico</h2>
-    <input id="match_id" placeholder="ID partita">
+    
+    <label for="match_select">Partita</label>
+    <select id="match_select">
+      <option value="">-- seleziona partita --</option>
+    </select>
+
     <input id="home_score" placeholder="Gol Roma">
     <input id="away_score" placeholder="Gol avversari">
     <input id="scorer" placeholder="Marcatore">
@@ -32,10 +37,9 @@
     <div id="leaderboard"></div>
 </div>
 
-<!-- 🔹 Links admin: saranno visibili solo se l'utente è admin -->
 <div id="adminLinks" style="display:none; margin-top:30px; text-align:center;">
     <h3>Pannelli Admin</h3>
-    <p><a href="add-match.html" target="_blank">➕ Inserisci Partita</a></p>
+    <p><a href="admin_inserisci.html" target="_blank">➕ Inserisci Partita</a></p>
     <p><a href="admin_risultati.html" target="_blank">✏️ Aggiorna Risultati</a></p>
 </div>
 
@@ -43,13 +47,14 @@
 <script>
 let token = "";
 let isAdmin = false;
+const backendUrl = "https://backendpronosticiasroma.onrender.com"; // cambia con il tuo URL
 
 async function login() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
   try {
-    const res = await fetch("https://backendpronosticiasroma.onrender.com/login", {
+    const res = await fetch(`${backendUrl}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
@@ -69,35 +74,88 @@ async function login() {
         console.error("Errore decodifica JWT:", e);
       }
 
-      console.log("Payload JWT:", decoded);
-      isAdmin = username == "Valerio" || false; //decoded.is_admin || false;
+      isAdmin = decoded.is_admin || false;
 
-      // Mostra pannelli user
       document.getElementById("login").style.display = "none";
       document.getElementById("main").style.display = "block";
 
-      // Mostra link admin solo se admin E se l'elemento esiste
-      const adminLinks = document.getElementById("adminLinks");
-      if (isAdmin && adminLinks) {
-        adminLinks.style.display = "block";
+      if(isAdmin && document.getElementById("adminLinks")){
+        document.getElementById("adminLinks").style.display = "block";
       }
 
-      // Carica classifica (funzione nel tuo app.js)
+      // carica classifica
       if (typeof loadLeaderboard === "function") {
         loadLeaderboard();
       }
+
+      // carica partite future nel menu
+      loadUpcomingMatches();
+
     } else {
       alert(data.error || "Errore login");
     }
   } catch (err) {
-    console.error("Errore di connessione al server:", err);
-    alert("Errore di connessione al server. Controlla la console.");
+    console.error("Errore di connessione:", err);
+    alert("Errore di connessione al server.");
   }
 }
 
-// esempio di funzione register (se non già in app.js)
-function register() {
-  alert("Funzione register ancora da implementare 😅");
+async function loadUpcomingMatches() {
+  try {
+    const res = await fetch(`${backendUrl}/matches/upcoming`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const matches = await res.json();
+
+    const select = document.getElementById("match_select");
+    select.innerHTML = `<option value="">-- seleziona partita --</option>`; // reset
+
+    matches.forEach(m => {
+      const option = document.createElement("option");
+      option.value = m.id;
+      option.textContent = `${new Date(m.date).toLocaleString()} - ${m.home_team} vs ${m.away_team}`;
+      select.appendChild(option);
+    });
+
+  } catch (err) {
+    console.error("Errore recupero partite future:", err);
+  }
+}
+
+async function addPrediction() {
+  const match_id = document.getElementById("match_select").value;
+  const home_score = document.getElementById("home_score").value;
+  const away_score = document.getElementById("away_score").value;
+  const scorer = document.getElementById("scorer").value;
+
+  if(!match_id || !home_score || !away_score || !scorer){
+    alert("⚠️ Completa tutti i campi");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${backendUrl}/predictions`, {
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ match_id, home_score, away_score, scorer })
+    });
+
+    const data = await res.json();
+    if(res.ok){
+      alert("✅ Pronostico salvato!");
+    } else {
+      alert("❌ Errore: " + (data.error || "Impossibile salvare"));
+    }
+  } catch (err) {
+    console.error("Errore:", err);
+  }
+}
+
+function register(){
+  alert("Funzione registrazione da implementare");
 }
 </script>
 </body>
