@@ -54,6 +54,7 @@ async function login(forcedUsername, forcedPassword) {
 
         if (res.ok && data.token) {
             token = data.token;
+            localStorage.setItem("token", token);
             const decoded = JSON.parse(atob(token.split(".")[1]));
             isAdmin = decoded.is_admin;
 
