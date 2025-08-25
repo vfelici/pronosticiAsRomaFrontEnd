@@ -39,7 +39,20 @@ button {
 button:hover {
   background: #800;
 }
+.page-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;              /* spaziatura tra logo e testo */
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
 
+.logo {
+  height: 50px;           /* dimensione stemma */
+  width: auto;
+}
 /* 🔹 Adatta meglio su schermi stretti */
 @media (max-width: 600px) {
   body {
@@ -55,4 +68,12 @@ button:hover {
   table, td, th {
     font-size: 0.9rem;
   }
+  .page-title {
+    font-size: 1.4rem;
+    gap: 10px;
+  }
+  .logo {
+    height: 35px;
+  }
 }
+
