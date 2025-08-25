@@ -84,10 +84,24 @@ async function loadUpcomingMatches() {
     select.innerHTML = `<option value="">-- seleziona partita --</option>`; // reset
 
     matches.forEach(m => {
-      const option = document.createElement("option");
-      option.value = m.id;
-      option.textContent = `${new Date(m.date).toLocaleString()} - ${m.home_team} vs ${m.away_team}`;
-      select.appendChild(option);
+    const matchDate = new Date(m.date);   // UTC dal DB → convertito local dal browser
+    const now = new Date();
+    
+    const option = document.createElement("option");
+    option.value = m.id;
+    
+    // Mostra l'orario in fuso italiano (Europe/Rome)
+    const oraLocale = matchDate.toLocaleString("it-IT", { timeZone: "Europe/Rome" });
+    
+    option.textContent = `${oraLocale} - ${m.home_team} vs ${m.away_team}`;
+    
+    // ⚠️ Se la partita è già iniziata → disabilita
+    if (matchDate <= now) {
+        option.disabled = true;
+        option.textContent += " (iniziata)";
+    }
+    
+    select.appendChild(option);
     });
 
   } catch (err) {
@@ -106,14 +120,21 @@ async function addPrediction() {
     return;
   }
 
+  // ulteriore controllo tempo (anche se select già disabilita)
+  const matchOption = document.querySelector(`#match_select option[value="${match_id}"]`);
+  if (matchOption && matchOption.disabled) {
+    alert("⚠️ Non puoi più inserire/modificare pronostici: la partita è iniziata!");
+    return;
+  }
+
   try {
-    const res = await fetch(`${backendUrl}/predictions`, {
+    const res = await fetch(`${backendUrl}/matches/${match_id}/predictions`, {
       method: "POST",
       headers:{
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
       },
-      body: JSON.stringify({ match_id, home_score, away_score, scorer })
+      body: JSON.stringify({ home_score, away_score, scorer })
     });
 
     const data = await res.json();
