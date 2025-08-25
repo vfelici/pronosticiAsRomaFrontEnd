@@ -64,9 +64,8 @@
 <script>
 let token = "";
 const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO backend URL
-alert("recupero il token");
+
 token = localStorage.getItem("token"); // recupero token salvato
-alert("Token recuperato");
 if (!token) {
   alert("⚠️ Devi prima fare login da index.html");
   window.location.href = "index.html";
@@ -74,9 +73,7 @@ if (!token) {
 const decoded = JSON.parse(atob(token.split(".")[1]));
 if (decoded.is_admin) {
   document.getElementById("mainPanel").style.display = "block";
-  alert("carico le partite...");
   loadMatches();
-  alert("caricate?");
 } else {
   alert("Non sei admin!");
 }
