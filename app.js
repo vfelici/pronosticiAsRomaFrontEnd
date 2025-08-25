@@ -64,6 +64,7 @@ async function login(forcedUsername, forcedPassword) {
             if (isAdmin) document.getElementById("adminLinks").style.display = "block";
 
             loadLeaderboard();
+            loadScorers();
             loadUpcomingMatches();
             loadAllMatchesForView();
         } else {
@@ -253,4 +254,17 @@ async function loadAllMatchesForView() {
   } catch (err) {
     console.error("Errore caricamento partite per visualizzazione:", err);
   }
+}
+
+async function loadScorers() {
+  const res = await fetch(`${backendUrl}/scorers`);
+  const players = await res.json();
+  const select = document.getElementById("scorer_select");
+  select.innerHTML = "";
+  players.forEach(p => {
+    const option = document.createElement("option");
+    option.value = p.id;
+    option.textContent = `${p.name} (+${p.points}pt)`;
+    select.appendChild(option);
+  });
 }
