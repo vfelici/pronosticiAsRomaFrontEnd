@@ -64,9 +64,9 @@ async function login(forcedUsername, forcedPassword) {
             if (isAdmin) document.getElementById("adminLinks").style.display = "block";
 
             loadLeaderboard();
-            loadScorers();
             loadUpcomingMatches();
             loadAllMatchesForView();
+            loadScorers();
         } else {
             alert(data.error || "Errore login");
         }
