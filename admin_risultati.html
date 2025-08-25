@@ -73,9 +73,10 @@ if (!token) {
 }
 const decoded = JSON.parse(atob(token.split(".")[1]));
 if (decoded.is_admin) {
-  document.getElementById("loginPanel").style.display = "none";
   document.getElementById("mainPanel").style.display = "block";
+  alert("carico le partite...");
   loadMatches();
+  alert("caricate?");
 } else {
   alert("Non sei admin!");
 }
