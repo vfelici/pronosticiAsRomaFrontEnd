@@ -6,49 +6,50 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Pronostici AS Roma</h1>
-
-<div id="login">
-    <input id="username" placeholder="Username">
-    <input id="password" placeholder="Password" type="password">
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Register</button>
-</div>
-
-<div id="main" style="display:none;">
-    <h2>Inserisci pronostico</h2>
-    
-    <label for="match_select">Partita</label>
-    <select id="match_select">
-      <option value="">-- seleziona partita --</option>
-    </select>
-
-    <input id="home_score" placeholder="Gol casa">
-    <input id="away_score" placeholder="Gol trasferta">
-    <label for="scorer_select">Marcatore previsto</label>
-    <select id="scorer_select"></select>
-    <button onclick="addPrediction()">Invia</button>
-
-    <h2>Visualizza pronostici</h2>
-    <label for="view_match_select">Seleziona partita</label>
-    <select id="view_match_select">
-        <option value="">-- seleziona partita --</option>
-    </select>
-    <button onclick="viewPredictions()">Mostra pronostici</button>
-    <div id="predictions_list"></div>
-    
-    
-
-    <h2>Classifica</h2>
-    <div id="leaderboard"></div>
-</div>
-
-<div id="adminLinks" style="display:none; margin-top:30px; text-align:center;">
-    <h3>Pannelli Admin</h3>
-    <p><a href="add-match.html" target="_blank">➕ Inserisci Partita</a></p>
-    <p><a href="admin_risultati.html" target="_blank">✏️ Aggiorna Risultati</a></p>
-</div>
-
+    <div class="container">
+        <h1>Pronostici AS Roma</h1>
+        
+        <div id="login">
+            <input id="username" placeholder="Username">
+            <input id="password" placeholder="Password" type="password">
+            <button onclick="login()">Login</button>
+            <button onclick="register()">Register</button>
+        </div>
+        
+        <div id="main" style="display:none;">
+            <h2>Inserisci pronostico</h2>
+            
+            <label for="match_select">Partita</label>
+            <select id="match_select">
+              <option value="">-- seleziona partita --</option>
+            </select>
+        
+            <input id="home_score" placeholder="Gol casa">
+            <input id="away_score" placeholder="Gol trasferta">
+            <label for="scorer_select">Marcatore previsto</label>
+            <select id="scorer_select"></select>
+            <button onclick="addPrediction()">Invia</button>
+        
+            <h2>Visualizza pronostici</h2>
+            <label for="view_match_select">Seleziona partita</label>
+            <select id="view_match_select">
+                <option value="">-- seleziona partita --</option>
+            </select>
+            <button onclick="viewPredictions()">Mostra pronostici</button>
+            <div id="predictions_list"></div>
+            
+            
+        
+            <h2>Classifica</h2>
+            <div id="leaderboard"></div>
+        </div>
+        
+        <div id="adminLinks" style="display:none; margin-top:30px; text-align:center;">
+            <h3>Pannelli Admin</h3>
+            <p><a href="add-match.html" target="_blank">➕ Inserisci Partita</a></p>
+            <p><a href="admin_risultati.html" target="_blank">✏️ Aggiorna Risultati</a></p>
+        </div>
+    </div>
 <script src="app.js"></script>
 </body>
 </html>
