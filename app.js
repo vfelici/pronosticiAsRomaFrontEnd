@@ -115,17 +115,10 @@ async function addPrediction() {
   const match_id = document.getElementById("match_select").value;
   const home_score = document.getElementById("home_score").value;
   const away_score = document.getElementById("away_score").value;
-  const scorer = document.getElementById("scorer").value;
+  const scorer_id = document.getElementById("scorer_select").value;
 
-  if(!match_id || !home_score || !away_score || !scorer){
+  if(!match_id || !home_score || !away_score || !scorer_id){
     alert("⚠️ Completa tutti i campi");
-    return;
-  }
-
-  // ulteriore controllo tempo (anche se select già disabilita)
-  const matchOption = document.querySelector(`#match_select option[value="${match_id}"]`);
-  if (matchOption && matchOption.disabled) {
-    alert("⚠️ Non puoi più inserire/modificare pronostici: la partita è iniziata!");
     return;
   }
 
@@ -136,7 +129,7 @@ async function addPrediction() {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
       },
-      body: JSON.stringify({ home_score, away_score, scorer })
+      body: JSON.stringify({ home_score, away_score, scorer_id })
     });
 
     const data = await res.json();
