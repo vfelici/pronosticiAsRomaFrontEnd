@@ -181,7 +181,7 @@ async function loadLeaderboard() {
         if (res.ok) {
             let html = "<ol>";
             data.forEach(row => {
-                html += `<li>${row.username} - ${row.total_points} punti</li>`;
+                html += `<li>${row.username} - ${row.points} punti</li>`;
             });
             html += "</ol>";
             document.getElementById("leaderboard").innerHTML = html;
