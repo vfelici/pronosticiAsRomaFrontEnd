@@ -64,7 +64,8 @@
 <script>
 let token = "";
 const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO backend URL
-
+let scorersList = [];
+  
 token = localStorage.getItem("token"); // recupero token salvato
 if (!token) {
   alert("⚠️ Devi prima fare login da index.html");
@@ -74,8 +75,17 @@ const decoded = JSON.parse(atob(token.split(".")[1]));
 if (decoded.is_admin) {
   document.getElementById("mainPanel").style.display = "block";
   loadMatches();
+  loadScorers();
 } else {
   alert("Non sei admin!");
+}
+
+// carico i possibili marcatori dal backend (una sola volta all'avvio admin)
+async function loadScorers() {
+  const res = await fetch(`${backendUrl}/scorers`, {
+    headers: { "Authorization": "Bearer " + token }
+  });
+  scorersList = await res.json();
 }
   
 async function login() {
@@ -116,9 +126,14 @@ async function loadMatches() {
     data.forEach(m => {
       const row = document.createElement("tr");
 
+      // costruisco la dropdown dei marcatori
+      const optionsHtml = scorersList.map(s =>
+        `<option value="${s.id}">${s.name} (+${s.points}pt)</option>`
+      ).join("");
+
       row.innerHTML = `
         <td>${m.id}</td>
-        <td>${new Date(m.date).toLocaleString()}</td>
+        <td>${new Date(m.date).toLocaleString("it-IT",{timeZone:"Europe/Rome"})}</td>
         <td>${m.home_team}</td>
         <td>${m.away_team}</td>
         <td>${m.home_score !== null && m.away_score !== null 
@@ -129,12 +144,37 @@ async function loadMatches() {
           <input type="number" id="hs_${m.id}" placeholder="Casa" style="width:50px">
           <input type="number" id="as_${m.id}" placeholder="Trasferta" style="width:50px">
           <button onclick="updateResult(${m.id})">Aggiorna</button>
+          <br>
+          <label style="font-size:12px">Marcatori reali:</label><br>
+          <select id="scorers_${m.id}" multiple size="3" style="width:120px">${optionsHtml}</select><br>
+          <button onclick="saveScorers(${m.id})">Salva Marcatori</button>
         </td>
       `;
       table.appendChild(row);
     });
   } else {
     alert("Errore nel caricamento delle partite");
+  }
+}
+
+async function saveScorers(matchId) {
+  const select = document.getElementById(`scorers_${matchId}`);
+  const selected = Array.from(select.selectedOptions).map(o => parseInt(o.value));
+
+  const res = await fetch(`${backendUrl}/admin/matches/${matchId}/scorers`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ scorers: selected })
+  });
+
+  const data = await res.json();
+  if(res.ok){
+    alert("✅ Marcatori salvati");
+  } else {
+    alert("❌ Errore: " + (data.error || "Impossibile salvare marcatori"));
   }
 }
 
@@ -160,6 +200,7 @@ async function updateResult(matchId) {
 
   const data = await res.json();
   if(res.ok){
+    saveScorers(matchId);
     alert(`✅ Risultato aggiornato: ${data.home_team} ${data.home_score} - ${data.away_score} ${data.away_team}`);
     loadMatches();
   } else {
