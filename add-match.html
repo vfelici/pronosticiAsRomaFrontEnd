@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
   <title>Admin - Inserisci Partita</title>
   <style>
@@ -33,30 +34,31 @@
   </style>
 </head>
 <body>
-  <h1>Inserisci Partita</h1>
-
-  <div id="loginPanel">
-    <h2>Login Admin</h2>
-    <input id="username" placeholder="Username" />
-    <input id="password" placeholder="Password" type="password" />
-    <button onclick="login()">Login</button>
+  <div class="container">
+    <h1>Inserisci Partita</h1>
+  
+    <div id="loginPanel">
+      <h2>Login Admin</h2>
+      <input id="username" placeholder="Username" />
+      <input id="password" placeholder="Password" type="password" />
+      <button onclick="login()">Login</button>
+    </div>
+  
+    <div id="mainPanel" style="display:none;">
+      <label for="home">Squadra di casa</label>
+      <input id="home" placeholder="AS Roma" />
+  
+      <label for="away">Squadra ospite</label>
+      <input id="away" placeholder="Juventus" />
+  
+      <label for="date">Data e ora</label>
+      <input id="date" type="datetime-local" />
+  
+      <button onclick="addMatch()">Crea partita</button>
+  
+      <div id="status"></div>
+    </div>
   </div>
-
-  <div id="mainPanel" style="display:none;">
-    <label for="home">Squadra di casa</label>
-    <input id="home" placeholder="AS Roma" />
-
-    <label for="away">Squadra ospite</label>
-    <input id="away" placeholder="Juventus" />
-
-    <label for="date">Data e ora</label>
-    <input id="date" type="datetime-local" />
-
-    <button onclick="addMatch()">Crea partita</button>
-
-    <div id="status"></div>
-  </div>
-
 <script>
 let token = "";
 const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO backend URL
