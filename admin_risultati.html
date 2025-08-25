@@ -74,8 +74,8 @@ if (!token) {
 const decoded = JSON.parse(atob(token.split(".")[1]));
 if (decoded.is_admin) {
   document.getElementById("mainPanel").style.display = "block";
-  loadMatches();
   loadScorers();
+  loadMatches();
 } else {
   alert("Non sei admin!");
 }
@@ -200,7 +200,6 @@ async function updateResult(matchId) {
 
   const data = await res.json();
   if(res.ok){
-    saveScorers(matchId);
     alert(`✅ Risultato aggiornato: ${data.home_team} ${data.home_score} - ${data.away_score} ${data.away_team}`);
     loadMatches();
   } else {
