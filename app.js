@@ -63,7 +63,7 @@ async function login(forcedUsername, forcedPassword) {
             if (isAdmin) document.getElementById("adminLinks").style.display = "block";
 
             loadLeaderboard();
-            alert("Login eseguito come " + username);
+            loadUpcomingMatches();
         } else {
             alert(data.error || "Errore login");
         }
@@ -72,31 +72,58 @@ async function login(forcedUsername, forcedPassword) {
     }
 }
 
-// --- INSERISCI PRONOSTICO ---
-async function addPrediction() {
-    try {
-        const res = await fetch(`${backendUrl}/matches/${document.getElementById("match_id").value}/predictions`, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify({
-                home_score: parseInt(document.getElementById("home_score").value),
-                away_score: parseInt(document.getElementById("away_score").value),
-                scorer: document.getElementById("scorer").value
-            })
-        });
-        const data = await res.json();
+async function loadUpcomingMatches() {
+  try {
+    const res = await fetch(`${backendUrl}/matches/upcoming`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const matches = await res.json();
 
-        if (res.ok) {
-            alert("Pronostico inviato!");
-        } else {
-            alert(data.error || "Errore nell'invio del pronostico");
-        }
-    } catch (err) {
-        alert("Errore connessione: " + err.message);
+    const select = document.getElementById("match_select");
+    select.innerHTML = `<option value="">-- seleziona partita --</option>`; // reset
+
+    matches.forEach(m => {
+      const option = document.createElement("option");
+      option.value = m.id;
+      option.textContent = `${new Date(m.date).toLocaleString()} - ${m.home_team} vs ${m.away_team}`;
+      select.appendChild(option);
+    });
+
+  } catch (err) {
+    console.error("Errore recupero partite future:", err);
+  }
+}
+
+async function addPrediction() {
+  const match_id = document.getElementById("match_select").value;
+  const home_score = document.getElementById("home_score").value;
+  const away_score = document.getElementById("away_score").value;
+  const scorer = document.getElementById("scorer").value;
+
+  if(!match_id || !home_score || !away_score || !scorer){
+    alert("⚠️ Completa tutti i campi");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${backendUrl}/predictions`, {
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ match_id, home_score, away_score, scorer })
+    });
+
+    const data = await res.json();
+    if(res.ok){
+      alert("✅ Pronostico salvato!");
+    } else {
+      alert("❌ Errore: " + (data.error || "Impossibile salvare"));
     }
+  } catch (err) {
+    console.error("Errore:", err);
+  }
 }
 
 // --- INSERIMENTO RISULTATO UFFICIALE ---
