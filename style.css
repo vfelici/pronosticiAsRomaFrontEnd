@@ -83,6 +83,44 @@ button:disabled {
   background-color: #8E1B21;
   color: #F7D417;
 }
+/* Tabella admin risultati */
+#matchesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border: 3px solid #8E1B21;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#matchesTable th {
+  background-color: #8E1B21;    /* Rosso Roma */
+  color: #F7D417;               /* Giallo Roma */
+  font-weight: bold;
+  padding: 10px;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+#matchesTable td {
+  padding: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+/* Riga alternata zebrata */
+#matchesTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+#matchesTable tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+/* Hover sulle righe */
+#matchesTable tr:hover {
+  background-color: #fff4cc; /* giallino tenue */
+  transition: background-color 0.2s ease;
+}
 
 /* 🔹 Adatta meglio su schermi stretti */
 @media (max-width: 600px) {
