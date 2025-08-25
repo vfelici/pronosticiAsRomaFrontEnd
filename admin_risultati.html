@@ -64,9 +64,9 @@
 <script>
 let token = "";
 const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO backend URL
-
+alert("recupero il token");
 token = localStorage.getItem("token"); // recupero token salvato
-
+alert("Token recuperato");
 if (!token) {
   alert("⚠️ Devi prima fare login da index.html");
   window.location.href = "index.html";
