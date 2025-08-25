@@ -36,9 +36,10 @@ window.onload = () => {
         }
 
         // carica cose automatiche
-        if (typeof loadLeaderboard === "function") loadLeaderboard();
-        if (typeof loadUpcomingMatches === "function") loadUpcomingMatches();
-        if (typeof loadScorers === "function") loadScorers();
+        loadLeaderboard();
+        loadUpcomingMatches();
+        loadAllMatchesForView();
+        loadScorers();
       } else {
         console.warn("Token scaduto. Richiesto nuovo login.");
         localStorage.removeItem("token");
