@@ -4,6 +4,49 @@ let isAdmin = false;
 // 👇 Cambia con l’URL del backend su Render 
 const backendUrl = "https://backendpronosticiasroma.onrender.com";
 
+// 👇 funzione per decodificare in base64 il JWT payload
+function decodeJWT(token) {
+  try {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch (e) {
+    console.error("Errore decoding JWT:", e);
+    return null;
+  }
+}
+
+window.onload = () => {
+  const savedToken = localStorage.getItem("token");
+  if (savedToken) {
+    token = savedToken;
+    const decoded = decodeJWT(token);
+
+    if (decoded) {
+      console.log("Token trovato:", decoded);
+
+      // controlla se scaduto lato client (campo exp è in secondi UNIX)
+      const now = Math.floor(Date.now() / 1000);
+      if (decoded.exp && decoded.exp > now) {
+        // valido → carica direttamente pannelli
+        isAdmin = decoded.is_admin || false;
+        document.getElementById("login").style.display = "none";
+        document.getElementById("main").style.display = "block";
+
+        if (isAdmin && document.getElementById("adminLinks")) {
+          document.getElementById("adminLinks").style.display = "block";
+        }
+
+        // carica cose automatiche
+        if (typeof loadLeaderboard === "function") loadLeaderboard();
+        if (typeof loadUpcomingMatches === "function") loadUpcomingMatches();
+        if (typeof loadScorers === "function") loadScorers();
+      } else {
+        console.warn("Token scaduto. Richiesto nuovo login.");
+        localStorage.removeItem("token");
+      }
+    }
+  }
+};
+
 // --- REGISTRAZIONE + LOGIN AUTOMATICO ---
 async function register() {
     const username = document.getElementById("username").value.trim();
