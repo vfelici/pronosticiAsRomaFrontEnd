@@ -126,11 +126,6 @@ async function loadMatches() {
     data.forEach(m => {
       const row = document.createElement("tr");
 
-      // costruisco la dropdown dei marcatori
-      const optionsHtml = scorersList.map(s =>
-        `<option value="${s.id}">${s.name} (+${s.points}pt)</option>`
-      ).join("");
-
       row.innerHTML = `
         <td>${m.id}</td>
         <td>${new Date(m.date).toLocaleString("it-IT",{timeZone:"Europe/Rome"})}</td>
@@ -140,13 +135,16 @@ async function loadMatches() {
               ? m.home_score + " - " + m.away_score 
               : "-"}</td>
         <td>${m.finished ? "✅" : "⏳"}</td>
+        <td>${m.scorers_names || "-"}</td>
         <td>
           <input type="number" id="hs_${m.id}" placeholder="Casa" style="width:50px">
           <input type="number" id="as_${m.id}" placeholder="Trasferta" style="width:50px">
           <button onclick="updateResult(${m.id})">Aggiorna</button>
           <br>
           <label style="font-size:12px">Marcatori reali:</label><br>
-          <select id="scorers_${m.id}" multiple size="3" style="width:120px">${optionsHtml}</select><br>
+          <select id="scorers_${m.id}" multiple size="3" style="width:120px">
+            ${scorersList.map(s => `<option value="${s.id}">${s.name} (+${s.points}pt)</option>`).join("")}
+          </select><br>
           <button onclick="saveScorers(${m.id})">Salva Marcatori</button>
         </td>
       `;
