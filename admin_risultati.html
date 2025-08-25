@@ -42,12 +42,7 @@
 <body>
   <h1>Aggiorna Risultati Partite</h1>
 
-  <div id="loginPanel">
-    <h2>Login Admin</h2>
-    <input id="username" placeholder="Username" />
-    <input id="password" type="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-  </div>
+  
 
   <div id="mainPanel" style="display:none;">
     <table>
@@ -70,6 +65,21 @@
 let token = "";
 const backendUrl = "https://backendpronosticiasroma.onrender.com"; // 👈 cambia con il TUO backend URL
 
+token = localStorage.getItem("token"); // recupero token salvato
+
+if (!token) {
+  alert("⚠️ Devi prima fare login da index.html");
+  window.location.href = "index.html";
+}
+const decoded = JSON.parse(atob(token.split(".")[1]));
+if (decoded.is_admin) {
+  document.getElementById("loginPanel").style.display = "none";
+  document.getElementById("mainPanel").style.display = "block";
+  loadMatches();
+} else {
+  alert("Non sei admin!");
+}
+  
 async function login() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
