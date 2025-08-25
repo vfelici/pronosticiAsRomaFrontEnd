@@ -1,61 +1,58 @@
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  padding: 10px;
+  margin: 0;              /* niente margini fissi */
+  padding: 10px;          /* un po' di spazio respirabile */
+  box-sizing: border-box;
 }
 
-h1 {
-  text-align: center;
-  font-size: 1.8rem;
+.container {
+  max-width: 900px;       /* limite massimo per i monitor grandi */
+  margin: 0 auto;         /* centra solo su desktop */
+  background: #fff;
 }
 
 input, button, select {
-  display: block;
-  width: 100%;
-  max-width: 400px;
+  width: 100%;            /* input a tutta larghezza */
+  max-width: 400px;       /* ma non troppo larghi su desktop */
   margin: 10px auto;
   padding: 12px;
   font-size: 1rem;
+  display: block;
   box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 8px;
+  border: 1px solid #ccc;
 }
 
 button {
   background: #a00;
   color: white;
-  border: none;
-  border-radius: 5px;
   cursor: pointer;
 }
-
 button:hover {
   background: #800;
 }
 
-/* contenitore centrale responsive */
-#login, #main {
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-/* Migliora leggibilità liste */
-#predictions_list ul, #leaderboard {
-  padding: 0;
-  margin: 10px;
-  list-style: none;
-}
-
-#predictions_list li {
-  padding: 8px;
-  border-bottom: 1px solid #ccc;
-}
-
-/* Mobile-friendly: titolo più piccolo e input più larghi */
+/* 🔹 Adatta meglio su schermi stretti */
 @media (max-width: 600px) {
+  body {
+    padding: 5px;    /* margini ridotti */
+  }
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   input, button, select {
     font-size: 1rem;
-    padding: 14px;
+    padding: 10px;
+  }
+  table, td, th {
+    font-size: 0.9rem;
   }
 }
