@@ -29,9 +29,14 @@
     <button onclick="addPrediction()">Invia</button>
 
     <h2>Visualizza pronostici</h2>
-    <input id="view_match_id" placeholder="ID partita">
+    <label for="view_match_select">Seleziona partita</label>
+    <select id="view_match_select">
+        <option value="">-- seleziona partita --</option>
+    </select>
     <button onclick="viewPredictions()">Mostra pronostici</button>
     <div id="predictions_list"></div>
+    
+    
 
     <h2>Classifica</h2>
     <div id="leaderboard"></div>
@@ -44,119 +49,5 @@
 </div>
 
 <script src="app.js"></script>
-<script>
-let token = "";
-let isAdmin = false;
-const backendUrl = "https://backendpronosticiasroma.onrender.com"; // cambia con il tuo URL
-
-async function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  try {
-    const res = await fetch(`${backendUrl}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.token) {
-      token = data.token;
-      localStorage.setItem("token", token);
-
-      // Decodifica JWT
-      let decoded = {};
-      try {
-        decoded = JSON.parse(atob(token.split(".")[1]));
-      } catch (e) {
-        console.error("Errore decodifica JWT:", e);
-      }
-
-      isAdmin = decoded.is_admin || false;
-
-      document.getElementById("login").style.display = "none";
-      document.getElementById("main").style.display = "block";
-
-      if(isAdmin && document.getElementById("adminLinks")){
-        document.getElementById("adminLinks").style.display = "block";
-      }
-
-      // carica classifica
-      if (typeof loadLeaderboard === "function") {
-        loadLeaderboard();
-      }
-
-      // carica partite future nel menu
-      loadUpcomingMatches();
-
-    } else {
-      alert(data.error || "Errore login");
-    }
-  } catch (err) {
-    console.error("Errore di connessione:", err);
-    alert("Errore di connessione al server.");
-  }
-}
-
-async function loadUpcomingMatches() {
-  try {
-    const res = await fetch(`${backendUrl}/matches/upcoming`, {
-      headers: { "Authorization": "Bearer " + token }
-    });
-    const matches = await res.json();
-
-    const select = document.getElementById("match_select");
-    select.innerHTML = `<option value="">-- seleziona partita --</option>`; // reset
-
-    matches.forEach(m => {
-      const option = document.createElement("option");
-      option.value = m.id;
-      option.textContent = `${new Date(m.date).toLocaleString()} - ${m.home_team} vs ${m.away_team}`;
-      select.appendChild(option);
-    });
-
-  } catch (err) {
-    console.error("Errore recupero partite future:", err);
-  }
-}
-
-async function addPrediction() {
-  const match_id = document.getElementById("match_select").value;
-  const home_score = document.getElementById("home_score").value;
-  const away_score = document.getElementById("away_score").value;
-  const scorer = document.getElementById("scorer").value;
-
-  if(!match_id || !home_score || !away_score || !scorer){
-    alert("⚠️ Completa tutti i campi");
-    return;
-  }
-
-  try {
-    const res = await fetch(`${backendUrl}/predictions`, {
-      method: "POST",
-      headers:{
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      body: JSON.stringify({ match_id, home_score, away_score, scorer })
-    });
-
-    const data = await res.json();
-    if(res.ok){
-      alert("✅ Pronostico salvato!");
-    } else {
-      alert("❌ Errore: " + (data.error || "Impossibile salvare"));
-    }
-  } catch (err) {
-    console.error("Errore:", err);
-  }
-}
-
-function register(){
-  alert("Funzione registrazione da implementare");
-}
-</script>
 </body>
 </html>
