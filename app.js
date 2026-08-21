@@ -2,7 +2,7 @@ let token = "";
 let isAdmin = false;
 
 // 👇 Cambia con l’URL del backend su Render 
-const backendUrl = "https://backendpronosticiasroma.onrender.com";
+const backendUrl = "https://www.h2app.cloud:3002";
 
 // 👇 funzione per decodificare in base64 il JWT payload
 function decodeJWT(token) {
